@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.seightday</groupId>
+  <artifactId>vpn</artifactId>
+  <version>1.0.0</version>
+   <properties>
+ <!-- mvn clean package appassembler:assemble verify -->
+<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+</properties>
+  <dependencies>
+<dependency>
+	<groupId>commons-io</groupId>
+	<artifactId>commons-io</artifactId>
+	<version>2.4</version>
+</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+		<version>1.7.5</version>
+	</dependency>
+	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.14</version>
+	</dependency>
+      
+  </dependencies>
+  <build>
+  	<plugins>
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>appassembler-maven-plugin</artifactId>
+		<configuration>
+			<repositoryLayout>flat</repositoryLayout>
+			<repositoryName>lib</repositoryName>
+			<configurationSourceDirectory>src/main/resources</configurationSourceDirectory>
+			<!-- Set the target configuration directory to be used in the bin scripts -->
+			<configurationDirectory>.</configurationDirectory>
+			<!-- Copy the contents from "/src/main/config" to the target configuration 
+				directory in the assembled application -->
+			<copyConfigurationDirectory>true</copyConfigurationDirectory>
+			<!-- Include the target configuration directory in the beginning of the 
+				classpath declaration in the bin scripts -->
+			<includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+			<!-- set alternative assemble directory -->
+			<assembleDirectory>vpn</assembleDirectory>
+			<!-- Extra JVM arguments that will be included in the bin scripts -->
+			<!-- <extraJvmArguments>-Xms768m -Xmx768m -XX:PermSize=128m -XX:MaxPermSize=256m 
+				-XX:NewSize=192m -XX:MaxNewSize=384m </extraJvmArguments> -->
+			<!-- Generate bin scripts for windows and unix pr default -->
+			<platforms>
+				<platform>windows</platform>
+				<!-- <platform>unix</platform> -->
+			</platforms>
+			<programs>
+				<program>
+					<mainClass>com.seightday.vpn.Main</mainClass>
+					<name>startvpn</name>
+				</program>
+			</programs>
+			<!-- prefix all bin files with "mycompany" -->
+			<binPrefix>startvpn</binPrefix>
+			<!-- <binFolder>.</binFolder> -->
+		</configuration>
+	</plugin>
+		  		<plugin>
+		  			<artifactId>maven-antrun-plugin</artifactId>
+		  			<executions>
+		  				<execution>
+		  					<phase>verify</phase>
+		  					<goals>
+		  						<goal>run</goal>
+		  					</goals>
+		  					<configuration>
+		  						<tasks>
+									<replace file="vpn/bin/startvpn.bat">
+  <replacetoken>if %ERRORLEVEL% NEQ 0 goto error</replacetoken>
+  <replacevalue><![CDATA[pause
+if %ERRORLEVEL% NEQ 0 goto error]]></replacevalue>
+									</replace>									
+		  						</tasks>
+		  					</configuration>
+		  				</execution>
+		  			</executions>
+		  		</plugin>
+  	</plugins>
+  </build>
+</project>
